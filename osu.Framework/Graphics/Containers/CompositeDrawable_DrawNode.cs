@@ -108,7 +108,7 @@ namespace osu.Framework.Graphics.Containers
                 screenSpaceMaskingQuad = null;
                 Shader = Source.Shader;
                 forceLocalVertexBatch = Source.ForceLocalVertexBatch;
-                sourceChildrenCount = Source.internalChildren.Count;
+                sourceChildrenCount = Source.InternalChildren.Count;
             }
 
             public virtual bool AddChildDrawNodes => true;
