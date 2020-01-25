@@ -444,7 +444,7 @@ namespace osu.Framework.Graphics.UserInterface
                 TextContainer.Add(d);
 
                 // account for potentially altered height of textbox
-                d.Y = TextFlow.BoundingBox.Y;
+                d.Y += TextFlow.BoundingBox.Y;
 
                 d.Hide();
                 d.Expire();
