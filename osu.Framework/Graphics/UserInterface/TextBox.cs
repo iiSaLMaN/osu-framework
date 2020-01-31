@@ -84,6 +84,7 @@ namespace osu.Framework.Graphics.UserInterface
         private Clipboard clipboard;
 
         private readonly Caret caret;
+        private readonly Highlighter highlighter;
 
         public delegate void OnCommitHandler(TextBox sender, bool newText);
 
@@ -116,6 +117,7 @@ namespace osu.Framework.Graphics.UserInterface
                             AutoSizeAxes = Axes.X,
                             RelativeSizeAxes = Axes.Y,
                         },
+                        highlighter = CreateSelectionHighlighter(TextFlow),
                     },
                 },
             };
@@ -305,10 +307,6 @@ namespace osu.Framework.Graphics.UserInterface
 
             float cursorPosEnd = getPositionAt(selectionEnd);
 
-            float? selectionWidth = null;
-            if (selectionLength > 0)
-                selectionWidth = getPositionAt(selectionRight) - cursorPos;
-
             float cursorRelativePositionAxesInBox = (cursorPosEnd - textContainerPosX) / DrawWidth;
 
             //we only want to reposition the view when the cursor reaches near the extremities.
@@ -322,7 +320,18 @@ namespace osu.Framework.Graphics.UserInterface
             TextContainer.MoveToX(LeftRightPadding - textContainerPosX, 300, Easing.OutExpo);
 
             if (HasFocus)
-                caret.DisplayAt(new Vector2(cursorPos, 0), selectionWidth);
+            {
+                if (selectionLength > 0)
+                {
+                    caret.Hide();
+                    highlighter.HighlightFrom(selectionLeft, selectionLength);
+                }
+                else
+                {
+                    highlighter.RemoveHighlight();
+                    caret.DisplayAt(new Vector2(cursorPos, 0));
+                }
+            }
 
             if (textAtLastLayout != text)
                 Current.Value = text;
@@ -568,6 +577,8 @@ namespace osu.Framework.Graphics.UserInterface
         }
 
         protected abstract Caret CreateCaret();
+
+        protected abstract Highlighter CreateSelectionHighlighter(FillFlowContainer textFlow);
 
         private readonly BindableWithCurrent<string> current = new BindableWithCurrent<string>();
 
@@ -841,6 +852,7 @@ namespace osu.Framework.Graphics.UserInterface
             unbindInput();
 
             caret.Hide();
+            highlighter.RemoveHighlight();
             cursorAndLayout.Invalidate();
 
             if (CommitOnFocusLost)

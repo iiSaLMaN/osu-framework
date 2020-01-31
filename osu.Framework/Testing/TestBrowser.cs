@@ -219,7 +219,8 @@ namespace osu.Framework.Testing
                                 {
                                     OnCommit = delegate
                                     {
-                                        var firstTest = leftFlowContainer.Where(b => b.IsPresent).SelectMany(b => b.FilterableChildren).OfType<TestSceneSubButton>().FirstOrDefault(b => b.MatchingFilter)?.TestType;
+                                        var firstTest = leftFlowContainer.Where(b => b.IsPresent).SelectMany(b => b.FilterableChildren).OfType<TestSceneSubButton>()
+                                                                         .FirstOrDefault(b => b.MatchingFilter)?.TestType;
                                         if (firstTest != null)
                                             LoadTest(firstTest);
                                     },
@@ -442,7 +443,7 @@ namespace osu.Framework.Testing
                 RecordState.Value = Testing.RecordState.Normal;
         }
 
-        private void finishLoad(Drawable newTest, Action onCompletion)
+        private void finishLoad(TestScene newTest, Action onCompletion)
         {
             if (CurrentTest != newTest)
             {
@@ -453,11 +454,11 @@ namespace osu.Framework.Testing
 
             updateButtons();
 
-            var methods = newTest.GetType().GetMethods();
+            var setUpMethods = newTest.GetRunnableMethodsFor(typeof(SetUpAttribute));
 
             bool hadTestAttributeTest = false;
 
-            foreach (var m in methods.Where(m => m.Name != nameof(TestScene.TestConstructor)))
+            foreach (var m in newTest.GetType().GetMethods().Where(m => m.Name != nameof(TestScene.TestConstructor)))
             {
                 if (m.GetCustomAttribute(typeof(TestAttribute), false) != null)
                 {
@@ -494,8 +495,6 @@ namespace osu.Framework.Testing
 
             void addSetUpSteps()
             {
-                var setUpMethods = methods.Where(m => m.Name != nameof(TestScene.SetUpTestForNUnit) && m.GetCustomAttributes(typeof(SetUpAttribute), false).Length > 0).ToArray();
-
                 if (setUpMethods.Any())
                 {
                     CurrentTest.AddStep(new SetUpStep
@@ -514,6 +513,8 @@ namespace osu.Framework.Testing
                 addSetUpSteps();
 
                 methodInfo.Invoke(CurrentTest, null);
+
+                CurrentTest.RunTearDownSteps();
             }
         }
 
