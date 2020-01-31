@@ -311,15 +311,18 @@ namespace osu.Framework.Graphics.Containers
             var words = new List<string>();
             var builder = new StringBuilder();
 
+            // "abcdef ghijkl"
             for (var i = 0; i < text.Length; i++)
             {
-                if (i == 0 || char.IsSeparator(text[i - 1]) || char.IsControl(text[i - 1]))
+                if (char.IsSeparator(text[i]) || char.IsControl(text[i]))
                 {
                     words.Add(builder.ToString());
                     builder.Clear();
                 }
-
-                builder.Append(text[i]);
+                else
+                {
+                    builder.Append(text[i]);
+                }
             }
 
             if (builder.Length > 0)
@@ -382,7 +385,7 @@ namespace osu.Framework.Graphics.Containers
                     }
 
                     float childLineBaseHeight = (c as IHasLineBaseHeight)?.LineBaseHeight ?? 0f;
-                    MarginPadding margin = new MarginPadding { Top = (childLineBaseHeight != 0f ? lineBaseHeight - childLineBaseHeight : 0f) + lineSpacingValue };
+                    MarginPadding margin = new MarginPadding { Top = (childLineBaseHeight != 0f ? lineBaseHeight - childLineBaseHeight : 0f) + lineSpacingValue, Right = (childLineBaseHeight != 0 ? childLineBaseHeight : lineBaseHeight) * 0.4f };
                     if (isFirstLine)
                         margin.Left = FirstLineIndent;
                     else if (isFirstChild)

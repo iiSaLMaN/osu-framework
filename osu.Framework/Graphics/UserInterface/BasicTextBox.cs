@@ -61,7 +61,7 @@ namespace osu.Framework.Graphics.UserInterface
 
             BackgroundFocused = FrameworkColour.BlueGreen;
             BackgroundUnfocused = FrameworkColour.BlueGreenDark;
-            TextContainer.Height = 0.75f;
+            //.Height = 0.75f;
         }
 
         protected override void NotifyInputError() => background.FlashColour(InputErrorColour, 200);
@@ -99,6 +99,11 @@ namespace osu.Framework.Graphics.UserInterface
             Child = new SpriteText { Text = c.ToString(), Font = FrameworkFont.Condensed.With(size: CalculatedTextSize) }
         };
 
+        //protected override ScrollContainer<Drawable> CreateHorizontalScrollContainer() => new BasicScrollContainer(Direction.Horizontal)
+        //{
+        //    RelativeSizeAxes = Axes.Both,
+        //};
+
         protected override SpriteText CreatePlaceholder() => new FadingPlaceholderText
         {
             Colour = FrameworkColour.YellowGreen,
@@ -119,7 +124,7 @@ namespace osu.Framework.Graphics.UserInterface
             public override void Hide()
             {
                 this.FadeOut(200);
-                this.MoveToY(DrawSize.Y, 200, Easing.InExpo);
+                this.MoveToOffset(new Vector2(0, DrawHeight), 200, Easing.InExpo);
             }
         }
 
@@ -133,7 +138,11 @@ namespace osu.Framework.Graphics.UserInterface
         protected override Caret CreateCaret() => new BasicCaret
         {
             CaretWidth = CaretWidth,
-            SelectionColour = SelectionColour,
+        };
+
+        protected override Highlighter CreateSelectionHighlighter(FillFlowContainer textFlow) => new BasicHighlighter(textFlow)
+        {
+            HighlightColour = SelectionColour,
         };
 
         public class BasicCaret : Caret
@@ -161,26 +170,12 @@ namespace osu.Framework.Graphics.UserInterface
 
             public float CaretWidth { get; set; }
 
-            public Color4 SelectionColour { get; set; }
-
-            public override void DisplayAt(Vector2 position, float? selectionWidth)
+            public override void DisplayAt(Vector2 position)
             {
-                if (selectionWidth != null)
-                {
-                    this.MoveTo(new Vector2(position.X, position.Y), 60, Easing.Out);
-                    this.ResizeWidthTo(selectionWidth.Value + CaretWidth / 2, caret_move_time, Easing.Out);
-                    this
-                        .FadeTo(0.5f, 200, Easing.Out)
-                        .FadeColour(SelectionColour, 200, Easing.Out);
-                }
-                else
-                {
-                    this.MoveTo(new Vector2(position.X - CaretWidth / 2, position.Y), 60, Easing.Out);
-                    this.ResizeWidthTo(CaretWidth, caret_move_time, Easing.Out);
-                    this
-                        .FadeColour(Color4.White, 200, Easing.Out)
-                        .Loop(c => c.FadeTo(0.7f).FadeTo(0.4f, 500, Easing.InOutSine));
-                }
+                this.MoveTo(new Vector2(position.X - CaretWidth / 2, position.Y), 60, Easing.Out)
+                    .ResizeWidthTo(CaretWidth, caret_move_time, Easing.Out)
+                    .FadeColour(Color4.White, 200, Easing.Out)
+                    .Loop(c => c.FadeTo(0.7f).FadeTo(0.4f, 500, Easing.InOutSine));
             }
         }
     }

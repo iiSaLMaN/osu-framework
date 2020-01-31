@@ -487,10 +487,10 @@ namespace osu.Framework.Tests.Visual.UserInterface
 
             protected override Caret CreateCaret() => new BorderCaret();
 
-            private class BorderCaret : Caret
-            {
-                private const float caret_width = 2;
+            protected override Highlighter CreateSelectionHighlighter(FillFlowContainer textFlow) => new BorderHighlighter(textFlow);
 
+            private class BorderCaret : BasicCaret
+            {
                 public BorderCaret()
                 {
                     RelativeSizeAxes = Axes.Y;
@@ -506,10 +506,36 @@ namespace osu.Framework.Tests.Visual.UserInterface
                     };
                 }
 
-                public override void DisplayAt(Vector2 position, float? selectionWidth)
+                public override void DisplayAt(Vector2 position)
                 {
+                    Alpha = 1;
                     Position = position - Vector2.UnitX;
-                    Width = selectionWidth + 1 ?? caret_width;
+                }
+            }
+
+            private class BorderHighlighter : Highlighter
+            {
+                public BorderHighlighter(Container<Drawable> source)
+                    : base(source)
+                {
+                }
+
+                protected override HighlightLine CreateHighlightLine() => new BorderHighlightLine();
+
+                private class BorderHighlightLine : BasicHighlighter.BasicHighlightLine
+                {
+                    public BorderHighlightLine()
+                    {
+                        Masking = true;
+                        BorderColour = Color4.White;
+                        BorderThickness = 3;
+
+                        InternalChild = new Box
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Colour = Color4.Transparent
+                        };
+                    }
                 }
             }
         }
