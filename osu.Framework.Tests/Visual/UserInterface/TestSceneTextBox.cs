@@ -191,17 +191,15 @@ namespace osu.Framework.Tests.Visual.UserInterface
             AddAssert(@"number text only numbers", () => numbers.Text == @"123456");
         }
 
-        [TestCase(true, true)]
-        [TestCase(true, false)]
-        [TestCase(false, false)]
-        public void CommitOnFocusLost(bool commitOnFocusLost, bool changeText)
+        [Test]
+        public void TestCommitViaEnter()
         {
             InsertableTextBox textBox = null;
 
             bool wasNewText = false;
             int commitCount = 0;
 
-            AddStep("add commit on unfocus textbox", () =>
+            AddStep("add normal textbox", () =>
             {
                 wasNewText = false;
                 commitCount = 0;
@@ -209,7 +207,6 @@ namespace osu.Framework.Tests.Visual.UserInterface
                 textBoxes.Add(textBox = new InsertableTextBox
                 {
                     Text = "Default Text",
-                    CommitOnFocusLost = commitOnFocusLost,
                     Size = new Vector2(500, 30),
                     OnCommit = (_, newText) =>
                     {
@@ -227,31 +224,7 @@ namespace osu.Framework.Tests.Visual.UserInterface
                 InputManager.Click(MouseButton.Left);
             });
 
-            if (changeText)
-                AddStep("insert more text", () => textBox.InsertString(" Plus More"));
-
-            AddStep("click away", () =>
-            {
-                InputManager.MoveMouseTo(Vector2.One);
-                InputManager.Click(MouseButton.Left);
-            });
-
-            if (commitOnFocusLost)
-            {
-                AddAssert("ensure one commit", () => commitCount == 1);
-                AddAssert("ensure new text", () => wasNewText == changeText);
-            }
-            else
-                AddAssert("ensure no commits", () => commitCount == 0);
-
-            AddStep("click on textbox", () =>
-            {
-                InputManager.MoveMouseTo(textBox);
-                InputManager.Click(MouseButton.Left);
-            });
-
-            if (changeText)
-                AddStep("insert more text", () => textBox.InsertString(" Plus More"));
+            AddStep("insert more text", () => textBox.InsertString(" Plus More"));
 
             AddStep("commit via enter", () =>
             {
@@ -259,10 +232,108 @@ namespace osu.Framework.Tests.Visual.UserInterface
                 InputManager.ReleaseKey(Key.Enter);
             });
 
-            int expectedCount = 1 + (commitOnFocusLost ? 1 : 0);
+            // ReleaseFocusOnCommit is set by default, so we should check if focus has been released from textbox.
+            AddAssert("focus released", () => InputManager.FocusedDrawable != textBox);
 
-            AddAssert($"ensure {expectedCount} commit(s)", () => commitCount == expectedCount);
-            AddAssert("ensure new text", () => wasNewText == changeText);
+            AddAssert("ensure one commit", () => commitCount == 1);
+            AddAssert("ensure new text", () => wasNewText);
+        }
+
+        [Test]
+        public void TestKeepFocusOnCommit()
+        {
+            InsertableTextBox textBox = null;
+
+            bool wasNewText = false;
+            int commitCount = 0;
+
+            AddStep("add keep focus on commit textbox", () =>
+            {
+                wasNewText = false;
+                commitCount = 0;
+
+                textBoxes.Add(textBox = new InsertableTextBox
+                {
+                    Text = "Default Text",
+                    ReleaseFocusOnCommit = false,
+                    Size = new Vector2(500, 30),
+                    OnCommit = (_, newText) =>
+                    {
+                        commitCount++;
+                        wasNewText = newText;
+                    }
+                });
+            });
+
+            AddAssert("ensure no commits", () => commitCount == 0);
+
+            AddStep("click on textbox", () =>
+            {
+                InputManager.MoveMouseTo(textBox);
+                InputManager.Click(MouseButton.Left);
+            });
+
+            AddStep("insert more text", () => textBox.InsertString(" Plus More"));
+
+            AddStep("commit via enter", () =>
+            {
+                InputManager.PressKey(Key.Enter);
+                InputManager.ReleaseKey(Key.Enter);
+            });
+
+            AddAssert("focus kept", () => InputManager.FocusedDrawable == textBox);
+
+            AddAssert("ensure one commit", () => commitCount == 1);
+            AddAssert("ensure new text", () => wasNewText);
+        }
+
+        [Test]
+        public void TestCommitOnFocusLost()
+        {
+            InsertableTextBox textBox = null;
+
+            bool wasNewText = false;
+            int commitCount = 0;
+
+            AddStep("add commit on unfocus textbox", () =>
+            {
+                wasNewText = false;
+                commitCount = 0;
+
+                textBoxes.Add(textBox = new InsertableTextBox
+                {
+                    Text = "Default Text",
+                    CommitOnFocusLost = true,
+                    Size = new Vector2(500, 30),
+                    OnCommit = (_, newText) =>
+                    {
+                        commitCount++;
+                        wasNewText = newText;
+                    }
+                });
+            });
+
+            AddAssert("ensure no commits", () => commitCount == 0);
+
+            AddStep("click on textbox", () =>
+            {
+                InputManager.MoveMouseTo(textBox);
+                InputManager.Click(MouseButton.Left);
+            });
+
+            AddStep("insert more text", () => textBox.InsertString(" Plus More"));
+
+            AddStep("click away", () =>
+            {
+                InputManager.MoveMouseTo(Vector2.One);
+                InputManager.Click(MouseButton.Left);
+            });
+
+            // ReleaseFocusOnCommit is set by default, so we should check if focus has been released from textbox.
+            AddAssert("focus released", () => InputManager.FocusedDrawable != textBox);
+
+            AddAssert("ensure one commit", () => commitCount == 1);
+            AddAssert("ensure new text", () => wasNewText);
         }
 
         [Test]
