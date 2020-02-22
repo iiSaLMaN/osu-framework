@@ -707,18 +707,13 @@ namespace osu.Framework.Graphics.UserInterface
 
         protected virtual void Commit()
         {
-            if (ReleaseFocusOnCommit && HasFocus)
-            {
-                killFocus();
-                if (CommitOnFocusLost)
-                    // the commit will happen as a result of the focus loss.
-                    return;
-            }
-
             audio.Samples.Get(@"Keyboard/key-confirm")?.Play();
 
             OnCommit?.Invoke(this, hasNewComittableText);
             lastCommitText = text;
+
+            if (ReleaseFocusOnCommit && HasFocus)
+                killFocus();
         }
 
         protected override void OnKeyUp(KeyUpEvent e)
@@ -843,7 +838,7 @@ namespace osu.Framework.Graphics.UserInterface
             caret.Hide();
             cursorAndLayout.Invalidate();
 
-            if (CommitOnFocusLost)
+            if (CommitOnFocusLost && hasNewComittableText)
                 Commit();
         }
 
