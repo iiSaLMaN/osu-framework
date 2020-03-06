@@ -12,13 +12,15 @@ namespace osu.Framework.Bindables
     /// Can only be retrieved via <see cref="Bindable{T}.BeginLease"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LeasedBindable<T> : Bindable<T>
+    public class LeasedBindable<T> : Bindable<T>, ILeasedBindable<T>
     {
         private readonly Bindable<T> source;
 
         private readonly T valueBeforeLease;
         private readonly bool disabledBeforeLease;
         private readonly bool revertValueOnReturn;
+
+        public bool IsValid => source == null || !hasBeenReturned;
 
         internal LeasedBindable([NotNull] Bindable<T> source, bool revertValueOnReturn)
         {
