@@ -334,6 +334,36 @@ namespace osu.Framework.Tests.Bindables
         }
 
         [Test]
+        public void TestBindToWhileDisabledLocally()
+        {
+            BindableInt bindable1 = new BindableInt(1234);
+            BindableInt bindable2 = new BindableInt { Disabled = true };
+
+            bindable2.BindTo(bindable1);
+
+            Assert.AreEqual(1234, bindable1.Value);
+            Assert.AreEqual(bindable2.Value, bindable1.Value);
+
+            Assert.IsFalse(bindable1.Disabled);
+            Assert.IsFalse(bindable2.Disabled);
+        }
+
+        [Test]
+        public void TestBindToDisabledRemote()
+        {
+            BindableInt bindable1 = new BindableInt(1234) { Disabled = true };
+            BindableInt bindable2 = new BindableInt();
+
+            bindable2.BindTo(bindable1);
+
+            Assert.AreEqual("default", bindable1.Value);
+            Assert.AreEqual(bindable2.Value, bindable1.Value);
+
+            Assert.IsTrue(bindable1.Disabled);
+            Assert.IsTrue(bindable2.Disabled);
+        }
+
+        [Test]
         public void TestUnbindOnDrawableDispose()
         {
             var drawable = new TestDrawable();
