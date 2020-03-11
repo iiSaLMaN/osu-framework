@@ -223,9 +223,9 @@ namespace osu.Framework.Bindables
         {
             if (them is BindableNumber<T> other)
             {
-                Precision = other.Precision;
-                MinValue = other.MinValue;
-                MaxValue = other.MaxValue;
+                PrecisionProperty.Set(other.Precision);
+                MinValueProperty.Set(other.MinValue);
+                MaxValueProperty.Set(other.MaxValue);
 
                 if (MinValue.CompareTo(MaxValue) > 0)
                 {
