@@ -588,7 +588,7 @@ namespace osu.Framework.Bindables
 
             // copy state and content over
             Parse(them);
-            Disabled = them.Disabled;
+            DisabledProperty.Set(them.Disabled);
 
             addWeakReference(them.weakReference);
             them.addWeakReference(weakReference);
