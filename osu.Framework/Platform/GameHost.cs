@@ -520,6 +520,8 @@ namespace osu.Framework.Platform
 
                 SetupForRun();
 
+                game.SetupStorage(Storage);
+
                 Window = CreateWindow();
 
                 ExecutionState = ExecutionState.Running;

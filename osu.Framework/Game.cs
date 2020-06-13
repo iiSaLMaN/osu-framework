@@ -331,6 +331,16 @@ namespace osu.Framework
         {
         }
 
+        /// <summary>
+        /// Set up all components that require the host storage and
+        /// should not be set up after game window construction.
+        /// (e.g. setting up the logger storage, must be done before the GL header is logged out).
+        /// </summary>
+        /// <param name="hostStorage">The host storage, equivalent to <c>Host.Storage</c>.</param>
+        protected internal virtual void SetupStorage(Storage hostStorage)
+        {
+        }
+
         public void Exit()
         {
             if (Host == null)
