@@ -80,7 +80,7 @@ namespace osu.Framework.Input
 
         protected override bool HandleMouseTouchStateChange(TouchStateChangeEvent e)
         {
-            // The parent manager will propagate mouse events from primary touch input if we are using it.
+            // The parent manager will propagate mouse events from latest moved touch input if we are using it.
             if (UseParentInput)
                 return false;
 
@@ -113,8 +113,15 @@ namespace osu.Framework.Input
                     new MouseScrollRelativeInput { Delta = scroll.ScrollDelta, IsPrecise = scroll.IsPrecise }.Apply(CurrentState, this);
                     break;
 
+                case TouchEvent touch:
+                    new TouchInput(touch.ScreenSpaceTouch, touch.IsActive(touch.ScreenSpaceTouch)).Apply(CurrentState, this);
+                    break;
+
+                case MidiEvent midi:
+                    new MidiKeyInput(midi.Key, midi.Velocity, midi.IsPressed(midi.Key)).Apply(CurrentState, this);
+                    break;
+
                 case KeyboardEvent _:
-                case TouchEvent _:
                 case JoystickButtonEvent _:
                 case JoystickAxisMoveEvent _:
                     SyncInputState(e.CurrentState);
@@ -175,6 +182,8 @@ namespace osu.Framework.Input
 
             new JoystickButtonInput(state?.Joystick?.Buttons, CurrentState.Joystick.Buttons).Apply(CurrentState, this);
             new JoystickAxisInput(state?.Joystick?.GetAxes()).Apply(CurrentState, this);
+
+            new MidiKeyInput(state?.Midi, CurrentState.Midi).Apply(CurrentState, this);
         }
     }
 }
