@@ -42,17 +42,15 @@ namespace osu.Framework.Graphics.Containers
             get => content;
             set
             {
-                if (content?.Equals(value) ?? false)
+                if (content == value)
                     return;
 
                 if (content != null)
-                    content.ContentChanged -= onContentChange;
+                    content.ElementChanged -= onContentChange;
 
                 content = value;
-
-                cellContent.Invalidate();
-
-                content.ContentChanged += onContentChange;
+                content.ElementChanged += onContentChange;
+                onContentChange();
             }
         }
 
