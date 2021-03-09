@@ -135,6 +135,20 @@ namespace osu.Framework.Input.Bindings
                     handleNewReleased(state, KeyCombination.FromMidiKey(midiUp.Key));
                     return false;
 
+                case TabletPenButtonPressEvent tabletPenDown:
+                    return handleNewPressed(state, KeyCombination.FromTabletPenButton(tabletPenDown.Button), false);
+
+                case TabletPenButtonReleaseEvent tabletPenUp:
+                    handleNewReleased(state, KeyCombination.FromTabletPenButton(tabletPenUp.Button));
+                    return false;
+
+                case TabletAuxiliaryButtonPressEvent tabletAuxDown:
+                    return handleNewPressed(state, KeyCombination.FromTabletAuxiliaryButton(tabletAuxDown.Button), false);
+
+                case TabletAuxiliaryButtonReleaseEvent tabletAuxUp:
+                    handleNewReleased(state, KeyCombination.FromTabletAuxiliaryButton(tabletAuxUp.Button));
+                    return false;
+
                 case ScrollEvent scroll:
                 {
                     var keys = KeyCombination.FromScrollDelta(scroll.ScrollDelta);

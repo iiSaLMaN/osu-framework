@@ -2332,5 +2332,34 @@ namespace osu.Framework.Input.Bindings
         MidiC8,
 
         #endregion
+
+        #region Tablet
+
+        TabletPenPrimary,
+        TabletPenSecondary,
+        TabletPenTertiary,
+        TabletPenButton4,
+        TabletPenButton5,
+        TabletPenButton6,
+        TabletPenButton7,
+        TabletPenButton8,
+        TabletAuxiliaryButton1,
+        TabletAuxiliaryButton2,
+        TabletAuxiliaryButton3,
+        TabletAuxiliaryButton4,
+        TabletAuxiliaryButton5,
+        TabletAuxiliaryButton6,
+        TabletAuxiliaryButton7,
+        TabletAuxiliaryButton8,
+        TabletAuxiliaryButton9,
+        TabletAuxiliaryButton10,
+        TabletAuxiliaryButton11,
+        TabletAuxiliaryButton12,
+        TabletAuxiliaryButton13,
+        TabletAuxiliaryButton14,
+        TabletAuxiliaryButton15,
+        TabletAuxiliaryButton16
+
+        #endregion
     }
 }

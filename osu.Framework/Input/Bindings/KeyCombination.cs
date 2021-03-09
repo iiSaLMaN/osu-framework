@@ -155,6 +155,11 @@ namespace osu.Framework.Input.Bindings
 
         private string getReadableKey(InputKey key)
         {
+            if (key >= InputKey.TabletAuxiliaryButton1)
+                return $"Tablet Aux {key - InputKey.TabletAuxiliaryButton1 + 1}";
+            if (key >= InputKey.TabletPenPrimary)
+                return $"Tablet Pen {key - InputKey.TabletPenPrimary + 1}";
+
             if (key >= InputKey.MidiA0)
                 return key.ToString().Substring("Midi".Length).Replace("Sharp", "#");
 
@@ -398,6 +403,10 @@ namespace osu.Framework.Input.Bindings
 
             return InputKey.FirstJoystickButton + (button - JoystickButton.FirstButton);
         }
+
+        public static InputKey FromTabletPenButton(TabletPenButton button) => (InputKey)((int)InputKey.TabletPenPrimary + button);
+
+        public static InputKey FromTabletAuxiliaryButton(TabletAuxiliaryButton button) => (InputKey)((int)InputKey.TabletAuxiliaryButton1 + button);
 
         public static IEnumerable<InputKey> FromScrollDelta(Vector2 scrollDelta)
         {
