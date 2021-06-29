@@ -38,15 +38,15 @@ namespace osu.Framework.Localisation
             Romanised = romanised;
         }
 
-        public string GetLocalised(ILocalisationStore? store, FrameworkConfigManager? config)
+        public string GetLocalised(ILocalisationStore? store, bool preferUnicode)
         {
             if (string.IsNullOrEmpty(Romanised)) return Original ?? string.Empty;
             if (string.IsNullOrEmpty(Original)) return Romanised ?? string.Empty;
 
-            return config?.Get<bool>(FrameworkSetting.ShowUnicode) == true ? Original : Romanised;
+            return preferUnicode ? Original : Romanised;
         }
 
-        public override string ToString() => GetLocalised(null, null);
+        public override string ToString() => GetLocalised(null, false);
 
         public bool Equals(RomanisableString? other)
         {

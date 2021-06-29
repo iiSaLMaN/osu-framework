@@ -4,7 +4,6 @@
 #pragma warning disable 8632 // TODO: can be #nullable enable when Bindables are updated to also be.
 
 using osu.Framework.Bindables;
-using osu.Framework.Configuration;
 
 namespace osu.Framework.Localisation
 {
@@ -13,26 +12,19 @@ namespace osu.Framework.Localisation
         private class LocalisedBindableString : Bindable<string>, ILocalisedBindableString
         {
             private readonly IBindable<ILocalisationStore?> storage = new Bindable<ILocalisationStore?>();
-
-            // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable (reference must be kept for bindable to not get GC'd)
-            private readonly IBindable<bool> preferUnicode;
+            private readonly IBindable<bool> preferUnicode = new Bindable<bool>();
 
             private LocalisableString text;
-            private readonly FrameworkConfigManager config;
 
-            public LocalisedBindableString(LocalisableString text, Bindable<ILocalisationStore?> storage, FrameworkConfigManager config)
+            public LocalisedBindableString(LocalisableString text, Bindable<ILocalisationStore?> storage, IBindable<bool> preferUnicode)
             {
                 this.text = text;
 
                 this.storage.BindTo(storage);
+                this.preferUnicode.BindTo(preferUnicode);
+
                 this.storage.BindValueChanged(_ => updateValue());
-
-                this.config = config;
-
-                preferUnicode = config.GetBindable<bool>(FrameworkSetting.ShowUnicode);
-                preferUnicode.BindValueChanged(_ => updateValue());
-
-                updateValue();
+                this.preferUnicode.BindValueChanged(_ => updateValue(), true);
             }
 
             private void updateValue()
@@ -44,7 +36,7 @@ namespace osu.Framework.Localisation
                         break;
 
                     case ILocalisableStringData data:
-                        Value = data.GetLocalised(storage.Value, config);
+                        Value = data.GetLocalised(storage.Value, preferUnicode.Value);
                         break;
 
                     default:

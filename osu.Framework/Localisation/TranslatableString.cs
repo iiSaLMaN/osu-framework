@@ -6,7 +6,6 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using osu.Framework.Configuration;
 using osu.Framework.Logging;
 
 namespace osu.Framework.Localisation
@@ -49,7 +48,7 @@ namespace osu.Framework.Localisation
             Args = interpolation.GetArguments();
         }
 
-        public string GetLocalised(ILocalisationStore? store, FrameworkConfigManager config)
+        public string GetLocalised(ILocalisationStore? store, bool preferUnicode)
         {
             if (store == null)
                 return ToString();
