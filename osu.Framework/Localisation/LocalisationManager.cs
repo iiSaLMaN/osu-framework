@@ -14,9 +14,12 @@ namespace osu.Framework.Localisation
     {
         private readonly List<LocaleMapping> locales = new List<LocaleMapping>();
 
-        private readonly Bindable<bool> preferUnicode;
         private readonly Bindable<string> configLocale;
         private readonly Bindable<ILocalisationStore?> currentStorage = new Bindable<ILocalisationStore?>();
+
+        private readonly Bindable<bool> preferUnicode;
+
+        internal IBindable<bool> PreferUnicode => preferUnicode;
 
         public LocalisationManager(FrameworkConfigManager config)
         {
@@ -36,7 +39,7 @@ namespace osu.Framework.Localisation
         /// Creates an <see cref="ILocalisedBindableString"/> which automatically updates its text according to information provided in <see cref="ILocalisedBindableString.Text"/>.
         /// </summary>
         /// <returns>The <see cref="ILocalisedBindableString"/>.</returns>
-        public ILocalisedBindableString GetLocalisedString(LocalisableString original) => new LocalisedBindableString(original, currentStorage, preferUnicode);
+        public ILocalisedBindableString GetLocalisedString(LocalisableString original) => new LocalisedBindableString(original, currentStorage, this);
 
         private void updateLocale(ValueChangedEvent<string> locale)
         {

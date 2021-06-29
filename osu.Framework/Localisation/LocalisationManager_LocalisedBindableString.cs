@@ -11,20 +11,23 @@ namespace osu.Framework.Localisation
     {
         private class LocalisedBindableString : Bindable<string>, ILocalisedBindableString
         {
+            private readonly LocalisationManager manager;
+
             private readonly IBindable<ILocalisationStore?> storage = new Bindable<ILocalisationStore?>();
             private readonly IBindable<bool> preferUnicode = new Bindable<bool>();
 
             private LocalisableString text;
 
-            public LocalisedBindableString(LocalisableString text, Bindable<ILocalisationStore?> storage, IBindable<bool> preferUnicode)
+            public LocalisedBindableString(LocalisableString text, LocalisationManager manager)
             {
                 this.text = text;
+                this.manager = manager;
 
-                this.storage.BindTo(storage);
-                this.preferUnicode.BindTo(preferUnicode);
+                storage.BindTo(manager.currentStorage);
+                storage.BindValueChanged(_ => updateValue());
 
-                this.storage.BindValueChanged(_ => updateValue());
-                this.preferUnicode.BindValueChanged(_ => updateValue(), true);
+                preferUnicode.BindTo(manager.PreferUnicode);
+                preferUnicode.BindValueChanged(_ => updateValue(), true);
             }
 
             private void updateValue()
@@ -36,7 +39,7 @@ namespace osu.Framework.Localisation
                         break;
 
                     case ILocalisableStringData data:
-                        Value = data.GetLocalised(storage.Value, preferUnicode.Value);
+                        Value = data.GetLocalised(storage.Value, manager);
                         break;
 
                     default:

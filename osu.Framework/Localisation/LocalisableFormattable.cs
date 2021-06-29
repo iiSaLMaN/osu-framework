@@ -28,7 +28,7 @@ namespace osu.Framework.Localisation
             Format = format;
         }
 
-        public string GetLocalised(ILocalisationStore? store, bool preferUnicode)
+        public string GetLocalised(ILocalisationStore? store, ILocalisationManager manager)
         {
             if (store == null)
                 return ToString();
